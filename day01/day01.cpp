@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 
         std::cout << "Loaded " << depths.size() << " depths." << std::endl;
 
-        // Now analyze the loaded data:
+        // Part 1: Now analyze the loaded data:
         for (auto iter = depths.begin() + 1; iter != depths.end(); iter++) {
             auto iter_prev = iter;
             --iter_prev;
@@ -39,8 +39,9 @@ int main(int argc, char** argv) {
                 num_larger++;
             }
         }
-
         std::cout << "Number of measurements larger than the previous: " << num_larger << std::endl;
+
+        // Part 2: TODO
 
     } else {
         std::cout << "ERROR: failed to open data file" << std::endl;
