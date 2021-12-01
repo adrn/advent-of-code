@@ -5,6 +5,18 @@
 #include <charconv>
 #include <stdexcept>
 
+int num_larger_than_previous(std::vector<int> data) {
+    int num_larger = 0;
+    for (auto iter = data.begin() + 1; iter != data.end(); iter++) {
+        auto iter_prev = iter;
+        --iter_prev;
+
+        if (*iter > *iter_prev)
+            num_larger++;
+    }
+    return num_larger;
+}
+
 int main(int argc, char** argv) {
 
     if (argc != 2)
@@ -18,7 +30,7 @@ int main(int argc, char** argv) {
     std::string line;
     std::vector<int> depths;
     int depth;
-    int num_larger = 0;
+    int num_larger;
 
     if (datafile.is_open()) {
 
@@ -32,16 +44,20 @@ int main(int argc, char** argv) {
         std::cout << "Loaded " << depths.size() << " depths." << std::endl;
 
         // Part 1: Now analyze the loaded data:
-        for (auto iter = depths.begin() + 1; iter != depths.end(); iter++) {
-            auto iter_prev = iter;
-            --iter_prev;
-            if (*iter > *iter_prev) {
-                num_larger++;
-            }
-        }
-        std::cout << "Number of measurements larger than the previous: " << num_larger << std::endl;
+        num_larger = num_larger_than_previous(depths);
+        std::cout << "Part 1: Number of measurements larger than the previous: " << num_larger << std::endl;
 
-        // Part 2: TODO
+        // Part 2: Analyze the 3-element-summed version:
+        std::vector<int> depth_3sum;
+        for (auto iter = depths.begin(); iter != depths.end()-2; iter++) {
+            auto next1 = std::next(iter, 1);
+            auto next2 = std::next(iter, 2);
+            depth_3sum.push_back(*iter + *next1 + *next2);
+        }
+
+        num_larger = num_larger_than_previous(depth_3sum);
+        std::cout << "Part 2: Number of measurements larger than the previous: ";
+        std::cout << num_larger << std::endl;
 
     } else {
         std::cout << "ERROR: failed to open data file" << std::endl;
