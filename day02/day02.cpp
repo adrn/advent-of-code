@@ -25,7 +25,7 @@ std::vector<std::string> split(std::string text, char sep) {
 }
 
 
-std::vector<int> get_move_part1(std::string line) {
+std::vector<int> get_move(std::string line) {
     std::vector<int> move = {0, 0};  // (horizontal, depth)
     auto tokens = split(line, ' ');
     int step;
@@ -51,13 +51,31 @@ void part1(std::vector<std::string> lines) {
     std::vector<int> pos = {0, 0};  // (horiztonal, depth)
 
     for (auto line : lines) {
-        auto move = get_move_part1(line);
+        auto move = get_move(line);
         pos[0] += move[0];
         pos[1] += move[1];
     }
 
     std::cout << "Final position: " << pos[0] << ", " << pos[1] << std::endl;
     std::cout << "Part 1 answer: " << pos[0] * pos[1] << std::endl;
+}
+
+void part2(std::vector<std::string> lines) {
+    std::string line;
+    std::vector<int> pos = {0, 0};  // (horiztonal, depth)
+    int aim = 0;
+
+    for (auto line : lines) {
+        auto raw_move = get_move(line);
+        if (raw_move[0] != 0) {
+            pos[0] += raw_move[0];
+            pos[1] += aim * raw_move[0];
+        } else if (raw_move[1] != 0)
+            aim += raw_move[1];
+    }
+
+    std::cout << "Final position: " << pos[0] << ", " << pos[1] << std::endl;
+    std::cout << "Part 2 answer: " << pos[0] * pos[1] << std::endl;
 }
 
 
@@ -83,5 +101,6 @@ int main(int argc, char** argv) {
     }
 
     part1(lines);
+    part2(lines);
 
 }
