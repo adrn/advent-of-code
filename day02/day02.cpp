@@ -25,7 +25,7 @@ std::vector<std::string> split(std::string text, char sep) {
 }
 
 
-std::vector<int> get_move(std::string line) {
+std::vector<int> get_move_part1(std::string line) {
     std::vector<int> move = {0, 0};  // (horizontal, depth)
     auto tokens = split(line, ' ');
     int step;
@@ -46,6 +46,20 @@ std::vector<int> get_move(std::string line) {
     return move;
 }
 
+void part1(std::vector<std::string> lines) {
+    std::string line;
+    std::vector<int> pos = {0, 0};  // (horiztonal, depth)
+
+    for (auto line : lines) {
+        auto move = get_move_part1(line);
+        pos[0] += move[0];
+        pos[1] += move[1];
+    }
+
+    std::cout << "Final position: " << pos[0] << ", " << pos[1] << std::endl;
+    std::cout << "Part 1 answer: " << pos[0] * pos[1] << std::endl;
+}
+
 
 int main(int argc, char** argv) {
 
@@ -57,24 +71,17 @@ int main(int argc, char** argv) {
     std::cout << "Loading data file at " << datafile_path << std::endl;
 
     std::ifstream datafile (datafile_path);
+    std::vector<std::string> lines;
     std::string line;
 
-    std::vector<int> pos = {0, 0};  // position
-
     if (datafile.is_open()) {
-
-        while(std::getline(datafile, line)) {
-            auto move = get_move(line);
-            pos[0] += move[0];
-            pos[1] += move[1];
-        }
+        while(std::getline(datafile, line))
+            lines.push_back(line);
         datafile.close();
-
-        std::cout << "Final position: " << pos[0] << ", " << pos[1] << std::endl;
-        std::cout << "Part 1 answer: " << pos[0] * pos[1] << std::endl;
-
     } else {
         std::cout << "ERROR: failed to open data file" << std::endl;
     }
+
+    part1(lines);
 
 }
