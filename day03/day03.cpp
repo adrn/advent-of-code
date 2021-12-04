@@ -39,15 +39,16 @@ std::vector<bool> get_most_common(std::vector<std::vector<bool>> data) {
 
     unsigned int row_size = data[0].size();
 
-    std::vector<int> counts(num_rows, 0);
+    std::vector<int> counts(row_size, 0);
     for (int i=0; i < num_rows; i++)
         for (int j=0; j < row_size; j++)
             counts[j] += data[i][j];
 
     std::vector<bool> most_common = {};
     for (int j=0; j < row_size; j++) {
-        if (counts[j] >= (num_rows / 2.0))
+        if (counts[j] >= (num_rows / 2.0)) {
             most_common.push_back(true);
+        }
         else if (counts[j] < (num_rows / 2.0))
             most_common.push_back(false);
     }
@@ -58,7 +59,7 @@ std::vector<bool> get_most_common(std::vector<std::vector<bool>> data) {
 std::vector<bool> get_least_common(std::vector<std::vector<bool>> data) {
     auto most_common = get_most_common(data);
     for (int i = 0; i < most_common.size(); i++)
-        most_common[i] = !most_common[i];
+        most_common[i] = !(most_common[i]);
     return most_common;
 }
 
@@ -88,63 +89,43 @@ void part1(std::vector<std::vector<bool>> data) {
 }
 
 
-void part2(std::vector<std::vector<bool>> data) {
+int get_life_support_component(
+    std::vector<std::vector<bool>> data,
+    std::function<std::vector<bool>(std::vector<std::vector<bool>>)> func
+) {
+    // Make a copy of the data to modify (remove rows)
     std::vector<std::vector<bool> > data_copy = data;
 
     int row_size = data[0].size();
     std::vector<int> to_delete;
 
     for (int j = 0; j < row_size; j++) {
-    // for (int j = 0; j < 3; j++) {
-        // auto most_common = get_most_common(data_copy);
-        auto most_common = get_least_common(data_copy);
+        auto common = func(data_copy);
         to_delete = {};
 
-        std::cout << "most common: " << std::endl;
-        for (auto elem : most_common) {
-            std::cout << elem << " ";
-        }
-        std::cout << std::endl << std::endl;
-
-        for (int i = 0; i < data_copy.size(); i++) {
-            if (data_copy[i][j] != most_common[j]) {
-                std::cout << "i=" << i << "  j=" << j;
-                std::cout << "  data_copy=" << data_copy[i][j] << "  most_common=" << most_common[j] << std::endl;
+        for (int i = 0; i < data_copy.size(); i++)
+            if (data_copy[i][j] != common[j])
                 to_delete.push_back(i);
-            }
-        }
 
         for (int i = to_delete.size() - 1; i >= 0; i--) {
-            std::cout << "delete: " << to_delete[i] << std::endl;
             if (data_copy.size() <= 1)
                 break;
             data_copy.erase(data_copy.begin() + to_delete[i]);
         }
 
-        for (auto vec : data_copy) {
-            for (auto elem : vec) {
-                std::cout << elem << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << "------" << std::endl << std::endl;
-
         if (data_copy.size() <= 1)
             break;
     }
+    return binary_to_decimal(data_copy[0]);
+}
 
-    // for (auto elem : to_delete) {
-    //     std::cout << "to delete: " << elem << std::endl;
-    // }
 
-    // std::vector<bool> least_common = {};
-    // for (auto elem : most_common)
-    //     least_common.push_back(!elem);
-
-    // int gamma = binary_to_decimal(most_common);
-    // int epsilon = binary_to_decimal(least_common);
-
-    // std::cout << "Part 1 answer: " << gamma * epsilon << std::endl;
+void part2(std::vector<std::vector<bool>> data) {
+    int oxygen_gen = get_life_support_component(data, &get_most_common);
+    int co2_scrub = get_life_support_component(data, &get_least_common);
+    std::cout << "Oxygen generator: " << oxygen_gen << std::endl;
+    std::cout << "CO2 scrubber: " << co2_scrub << std::endl;
+    std::cout << "Part 2 answer: " << oxygen_gen * co2_scrub << std::endl;
 }
 
 
