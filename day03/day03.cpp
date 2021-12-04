@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
     std::string datafile_path(argv[1]);
     auto data = parse_file(datafile_path);
 
-    // part1(data);
+    part1(data);
     part2(data);
 
 }
