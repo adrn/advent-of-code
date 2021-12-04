@@ -84,8 +84,8 @@ bool is_a_winner(BingoCard card, std::vector<int> called_numbers) {
 
 
 void part1(std::vector<int> all_called, std::vector<BingoCard> bingo_cards) {
-    for (int i = 1; i < all_called.size(); i++) {
-        std::vector<int> called_now(all_called.begin(), all_called.begin() + i + 1);
+    for (int k = 1; k < all_called.size(); k++) {
+        std::vector<int> called_now(all_called.begin(), all_called.begin() + k + 1);
 
         for (auto card : bingo_cards) {
             bool winner = is_a_winner(card, called_now);
@@ -97,7 +97,7 @@ void part1(std::vector<int> all_called, std::vector<BingoCard> bingo_cards) {
                     for (int j=0; j < card.size(); j++)
                         if (called_card_numbers[i][j] == 0)
                             sum += card[i][j];
-                std::cout << "Board won on number: " << i << std::endl;
+                std::cout << "Board won on number: " << k << std::endl;
                 std::cout << "Sum of uncalled numbers: " << sum << std::endl;
                 std::cout << "Last called number: " << called_now.back() << std::endl;
                 std::cout << "Part 1 answer: " << sum * called_now.back() << std::endl;
@@ -108,8 +108,29 @@ void part1(std::vector<int> all_called, std::vector<BingoCard> bingo_cards) {
 }
 
 
-void part2(std::vector<std::vector<bool>> data) {
+void part2(std::vector<int> all_called, std::vector<BingoCard> bingo_cards) {
+    for (int k = all_called.size()-1; k >= 0; k--) {
+        std::vector<int> called_now(all_called.begin(), all_called.begin() + k + 1);
 
+        for (auto card : bingo_cards) {
+            bool winner = is_a_winner(card, called_now);
+            if (!winner) {
+                std::vector<int> called_now(all_called.begin(), all_called.begin() + k + 1 + 1);
+                auto called_card_numbers = get_called_numbers(card, called_now);
+
+                int sum = 0;
+                for (int i=0; i < card.size(); i++)
+                    for (int j=0; j < card.size(); j++)
+                        if (called_card_numbers[i][j] == 0)
+                            sum += card[i][j];
+                std::cout << "Board won on number: " << k << std::endl;
+                std::cout << "Sum of uncalled numbers: " << sum << std::endl;
+                std::cout << "Last called number: " << called_now.back() << std::endl;
+                std::cout << "Part 2 answer: " << sum * called_now.back() << std::endl;
+                return;
+            }
+        }
+    }
 }
 
 
@@ -130,6 +151,7 @@ int main(int argc, char** argv) {
     // print_vector2d<int>(bingo_cards[0]);
 
     part1(all_called, bingo_cards);
-    // part2(data);
+    std::cout << "--------" << std::endl;
+    part2(all_called, bingo_cards);
 
 }
