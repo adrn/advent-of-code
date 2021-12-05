@@ -4,23 +4,6 @@
 #include <vector>
 #include <charconv>
 
-template <class T>
-void print_vector1d(std::vector<T> data) {
-    std::cout << "[";
-    for (auto elem : data) {
-        std::cout << elem << ", ";
-    }
-    std::cout << "]" << std::endl;
-}
-
-template <class T>
-void print_vector2d(std::vector<std::vector<T>> data) {
-    std::cout << "[";
-    for (auto vec : data)
-        print_vector1d<T>(vec);
-    std::cout << "]" << std::endl;
-}
-
 std::vector<std::string> read_lines(std::string filename) {
     std::vector<std::string> data = {};
 

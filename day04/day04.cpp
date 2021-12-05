@@ -145,10 +145,7 @@ int main(int argc, char** argv) {
     auto lines = read_lines(datafile_path);
 
     auto all_called = get_called_numbers(lines[0]);
-    /// print_vector1d<int>(called);
-
     auto bingo_cards = get_bingo_cards(lines);
-    // print_vector2d<int>(bingo_cards[0]);
 
     part1(all_called, bingo_cards);
     std::cout << "--------" << std::endl;
