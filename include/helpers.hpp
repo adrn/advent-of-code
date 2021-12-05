@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 /*
     strip_string()
@@ -86,4 +87,45 @@ void print_vector2d(std::vector<std::vector<T>> data) {
         print_vector1d<T>(data[i]);
     }
     std::cout << "]" << std::endl;
+}
+
+/*
+    Math helpers:
+*/
+template <typename T>
+T max(std::vector<T> data) {
+    // Get minimum value for the type:
+    T max_comp = std::numeric_limits<T>::min();
+    for (int i=0; i < data.size(); i++)
+        max_comp = std::max(max_comp, data[i]);
+    return max_comp;
+}
+
+template <typename T>
+T max(std::vector<std::vector<T>> data) {
+    // Get minimum value for the type:
+    T max_comp = std::numeric_limits<T>::min();
+    for (int i=0; i < data.size(); i++)
+        for (int j=0; j < data[i].size(); j++)
+            max_comp = std::max(max_comp, data[i][j]);
+    return max_comp;
+}
+
+template <typename T>
+T min(std::vector<T> data) {
+    // Get maximum value for the type:
+    T min_comp = std::numeric_limits<T>::max();
+    for (int i=0; i < data.size(); i++)
+        min_comp = std::min(min_comp, data[i]);
+    return min_comp;
+}
+
+template <typename T>
+T min(std::vector<std::vector<T>> data) {
+    // Get maximum value for the type:
+    T min_comp = std::numeric_limits<T>::max();
+    for (int i=0; i < data.size(); i++)
+        for (int j=0; j < data[i].size(); j++)
+            min_comp = std::min(min_comp, data[i][j]);
+    return min_comp;
 }
