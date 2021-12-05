@@ -92,6 +92,10 @@ void print_vector2d(std::vector<std::vector<T>> data) {
 /*
     Math helpers:
 */
+template <typename T> int sign(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 template <typename T>
 T max(std::vector<T> data) {
     // Get minimum value for the type:
