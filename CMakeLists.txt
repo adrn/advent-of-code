@@ -8,6 +8,9 @@ find_package(Curses REQUIRED)
 message(STATUS "${CURSES_LIBRARIES}")
 include_directories(${CURSES_INCLUDE_DIR})
 
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+
+# Solution scripts:
 file(GLOB_RECURSE days RELATIVE ${CMAKE_CURRENT_LIST_DIR} day*/*.cpp)
 foreach(day ${days})
   message(STATUS "Found day: ${day}")
@@ -16,7 +19,9 @@ foreach(day ${days})
   add_executable(${day_base} ${day})
   target_compile_options(${day_base} PUBLIC -fPIC -std=c++17)
   target_include_directories(${day_base} PUBLIC ${day_dir})
+  target_include_directories(${day_base} PUBLIC include)
   target_link_libraries(${day_base} ${CURSES_LIBRARIES})
+  target_link_libraries(${day_base}  Eigen3::Eigen)
   set_property(TARGET ${day_base} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
   # Link any data files:
