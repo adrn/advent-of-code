@@ -36,12 +36,12 @@ void part1(std::vector<std::vector<int>> data) {
     for (auto row : data)
         add_line_to_grid(row, grid);
 
-    std::cout << grid << std::endl;
+    // std::cout << grid << std::endl;
 
     int num_2s = 0;
     for (int i=0; i < grid_size; i++)
         for (int j=0; j < grid_size; j++)
-            num_2s += (grid.coeff(i, j) == 2);
+            num_2s += (grid.coeff(i, j) >= 2);
     std::cout << "Part 1 answer: " << num_2s << std::endl;
 
 }
