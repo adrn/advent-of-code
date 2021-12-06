@@ -133,3 +133,11 @@ T min(std::vector<std::vector<T>> data) {
             min_comp = std::min(min_comp, data[i][j]);
     return min_comp;
 }
+
+template <typename T>
+T sum(std::vector<T> data) {
+    T data_sum = 0;
+    for (const auto &item : data)
+        data_sum += item;
+    return data_sum;
+}

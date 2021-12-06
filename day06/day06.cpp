@@ -4,14 +4,14 @@
 #include "day06.hpp"
 
 
-void part1(std::vector<int> fishies) {
-    int ndays = 80;
+void part1(std::vector<fish_t> fishies, int ndays) {
+    // Spawn fish the dumb way!
     int create_every = 6;
     int newborn_penalty = 2;
 
     auto state = fishies;
     for (int day=1; day < ndays+1; day++) {
-        std::vector<int> newborn = {};
+        std::vector<fish_t> newborn = {};
         for (int i=0; i < state.size(); i++){
             if (state[i] == 0) {
                 state[i] = create_every;
@@ -24,11 +24,35 @@ void part1(std::vector<int> fishies) {
 
         // std::cout << "After " << day << " days:  ";
         // print_vector1d(state);
-        if ((day == 18) || (day == 80))
+        if ((day == 18) || (day == ndays))
             std::cout << "After " << day << " days:  " << state.size() << std::endl;
     }
 }
 
+void part2(std::vector<fish_t> fishies, int ndays) {
+    // part1 solution obviously doesn't scale, so just keep track of the number of fish in each bin:
+    int create_every = 6;
+    int newborn_penalty = 2;
+
+    // Get initial state:
+    std::vector<unsigned long long> state(create_every + newborn_penalty + 1, 0);
+    for (auto fish : fishies)
+        state[fish] += 1;
+
+    unsigned long long nbabies;
+    for (int day=1; day < ndays+1; day++) {
+        nbabies = state[0];
+        for (int i=1; i < state.size(); i++)
+            state[i - 1] = state[i];
+        state[create_every] += nbabies;
+        state[create_every + newborn_penalty] = nbabies;
+
+        if ((day == 18) || (day == 80) || (day == ndays)) {
+            std::cout << "After " << day << " days:  " << sum(state) << " fish -- ";
+            print_vector1d(state);
+        }
+    }
+}
 
 int main(int argc, char** argv) {
     std::cout << "---------------- Day 06 ----------------" << std::endl;
@@ -40,7 +64,8 @@ int main(int argc, char** argv) {
     std::string datafile_path(argv[1]);
     auto fishies = parse_file(datafile_path);
 
-    part1(fishies);
+    part1(fishies, 80);
     std::cout << "--------" << std::endl;
+    part2(fishies, 256);
 
 }
