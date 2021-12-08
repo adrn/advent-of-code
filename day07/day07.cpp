@@ -29,13 +29,6 @@ std::vector<int> parse_file(std::string filename) {
     return data;
 }
 
-int median(std::vector<int> &v) {
-    // https://stackoverflow.com/questions/1719070/what-is-the-right-approach-when-using-stl-container-for-median-calculation/1719155#1719155
-    size_t n = v.size() / 2;
-    std::nth_element(v.begin(), v.begin()+n, v.end());
-    return v[n];
-}
-
 void part1(std::vector<int> &crabs) {
     auto x0 = median(crabs);
     std::cout << "Median position: " << x0 << std::endl;
@@ -45,6 +38,36 @@ void part1(std::vector<int> &crabs) {
         fuel_cost += std::abs(crab - x0);
 
     std::cout << "Part 1 answer (fuel cost): " << fuel_cost << std::endl;
+}
+
+std::vector<int> func(int x0, std::vector<int> data) {
+    int dx, absdx;
+    std::vector<int> res = {0, 0};
+
+    for (auto &x : data) {
+        dx = x - x0;
+        absdx = std::abs(dx);
+        res[0] += absdx * (absdx - 1) / 2;
+        res[1] += -dx + 0.5 * sign(dx);
+    }
+
+    return res;
+}
+
+void part2(std::vector<int> &crabs) {
+    // std::cout << "Median position: " << x0 << std::endl;
+    auto x0 = median(crabs);
+    auto opt_x = simple_minimize(&func, x0, crabs, 1000, 1e-4);
+    auto fuel_cost = func(opt_x, crabs);
+    std::cout << "result=" << opt_x << std::endl;
+    std::cout << "fuel cost=" << (int)fuel_cost[0] << std::endl;
+    return;
+
+    // int fuel_cost = 0;
+    // for (auto &crab : crabs)
+    //     fuel_cost += std::abs(crab - x0);
+
+    // std::cout << "Part 1 answer (fuel cost): " << fuel_cost << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -59,6 +82,6 @@ int main(int argc, char** argv) {
 
     part1(crabs);
     std::cout << "--------" << std::endl;
-    // part2(fishies, 256);
+    part2(crabs);
 
 }

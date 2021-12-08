@@ -141,3 +141,52 @@ T sum(std::vector<T> data) {
         data_sum += item;
     return data_sum;
 }
+
+template <typename T>
+T median(std::vector<T> &v) {
+    // https://stackoverflow.com/questions/1719070/what-is-the-right-approach-when-using-stl-container-for-median-calculation/1719155#1719155
+    size_t n = v.size() / 2;
+    std::nth_element(v.begin(), v.begin()+n, v.end());
+    return v[n];
+}
+
+
+/*
+    Optimization
+*/
+
+template <typename T>
+T simple_minimize(
+    std::vector<T> (*func)(T, std::vector<T>),
+    T x0,
+    std::vector<T> &data,
+    int maxiter = 1000,
+    double alpha=0.05
+) {
+    std::vector<T> obj_and_grad;
+    auto x = x0;
+    auto trial_x = x;
+    T result;
+
+    int i;
+    for (i=0; i < maxiter; i++) {
+        obj_and_grad = func(x, data);
+        if (obj_and_grad[1] == 0)
+            break;
+        trial_x = x - alpha * obj_and_grad[1];
+
+        std::cout << "iter=" << i << " x=" << x << " trial_x=" << trial_x << " val=" << obj_and_grad[0] <<  " grad=" << obj_and_grad[1] << std::endl;
+
+        if ((trial_x < 0) || std::isnan(trial_x))
+            break;
+
+        x = trial_x;
+        std::cout << "x=" << x << std::endl;
+    }
+
+    if (i >= maxiter)
+        std::cout << "Warning: optimizer hit maxiter" << std::endl;
+
+    result = x;
+    return result;
+}
