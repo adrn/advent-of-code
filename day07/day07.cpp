@@ -74,7 +74,7 @@ void part2(std::vector<int> &crabs) {
 }
 
 int main(int argc, char** argv) {
-    std::cout << "---------------- Day 06 ----------------" << std::endl;
+    std::cout << "---------------- Day 07 ----------------" << std::endl;
 
     if (argc != 2)
         throw std::runtime_error(
