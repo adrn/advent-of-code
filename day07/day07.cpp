@@ -4,6 +4,7 @@
 #include <vector>
 #include <charconv>
 #include <cmath>
+#include <algorithm>
 #include "helpers.hpp"
 
 std::vector<int> parse_file(std::string filename) {
@@ -40,34 +41,36 @@ void part1(std::vector<int> &crabs) {
     std::cout << "Part 1 answer (fuel cost): " << fuel_cost << std::endl;
 }
 
-std::vector<int> func(int x0, std::vector<int> data) {
-    int dx, absdx;
-    std::vector<int> res = {0, 0};
-
-    for (auto &x : data) {
-        dx = x - x0;
-        absdx = std::abs(dx);
-        res[0] += absdx * (absdx - 1) / 2;
-        res[1] += -dx + 0.5 * sign(dx);
+int func(int x0, std::vector<int> data) {
+    int absdx;
+    int val = 0;
+    for (auto &elem : data) {
+        absdx = std::abs(elem - x0);
+        val += (absdx * (absdx + 1)) / 2;
     }
+    return val;
+}
 
-    return res;
+std::vector<int> func(std::vector<int> x0, std::vector<int> data) {
+    std::vector<int> funcvals = {};
+    for (auto &x0_val : x0)
+        funcvals.push_back(func(x0_val, data));
+    return funcvals;
 }
 
 void part2(std::vector<int> &crabs) {
-    // std::cout << "Median position: " << x0 << std::endl;
-    auto x0 = median(crabs);
-    auto opt_x = simple_minimize(&func, x0, crabs, 1000, 1e-4);
-    auto fuel_cost = func(opt_x, crabs);
-    std::cout << "result=" << opt_x << std::endl;
-    std::cout << "fuel cost=" << (int)fuel_cost[0] << std::endl;
-    return;
+    // BRUTE FORCE BABY
+    auto med = median(crabs);
+    auto maxval = std::min((int)crabs.size(), 8 * med);
 
-    // int fuel_cost = 0;
-    // for (auto &crab : crabs)
-    //     fuel_cost += std::abs(crab - x0);
+    std::vector<int> x0s = {};
+    for (int x0=med; x0 < maxval; x0++)
+        x0s.push_back(x0);
 
-    // std::cout << "Part 1 answer (fuel cost): " << fuel_cost << std::endl;
+    auto funcvals = func(x0s, crabs);
+    auto best_x0_idx = std::min_element(funcvals.begin(), funcvals.end()) - funcvals.begin();
+    std::cout << "Best x0: " << x0s[best_x0_idx] << std::endl;
+    std::cout << "Part 2 answer (fuel cost): " << func(x0s[best_x0_idx], crabs) << std::endl;
 }
 
 int main(int argc, char** argv) {
