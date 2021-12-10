@@ -7,4 +7,4 @@ build:
 	make -j4 -C build
 
 run:
-	build/bin/day07 build/data/day07-data.txt
+	build/bin/day08 build/data/day08-data.txt
