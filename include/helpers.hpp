@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 /*
     strip_string()
@@ -87,6 +88,14 @@ void print_vector2d(std::vector<std::vector<T>> data) {
         print_vector1d<T>(data[i]);
     }
     std::cout << "]" << std::endl;
+}
+
+template <typename T1, typename T2>
+void print_map(std::map<T1, T2> data) {
+    std::cout << "{" << std::endl;
+    for (auto const& [key, val] : data)
+        std::cout << "    " << key << ": " << val << "," << std::endl;
+    std::cout << "}" << std::endl;
 }
 
 /*
@@ -189,4 +198,19 @@ T simple_minimize(
 
     result = x;
     return result;
+}
+
+/*
+    Misc.
+*/
+int vector_to_int(std::vector<int> v) {
+    std::reverse(v.begin(), v.end());
+    int decimal = 1;
+    int total = 0;
+    for (auto &it : v)
+    {
+        total += it * decimal;
+        decimal *= 10;
+    }
+    return total;
 }

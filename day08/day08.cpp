@@ -5,32 +5,17 @@
 #include <algorithm>
 #include "day08.hpp"
 
-void part1(std::vector<std::vector<std::string>> outputs) {
-    // First, we figure out which digits have unique lengths:
-    std::vector<int> digit_signal_lengths;
-    for (auto const& [key, val] : digit_to_signal)
-        digit_signal_lengths.push_back(val.length());
-    print_vector1d(digit_signal_lengths);
-
-    std::map<int, int> length_counts;
-    int i, shit;
-    for (i=0; i < digit_signal_lengths.size(); i++)
-        length_counts[digit_signal_lengths[i]] = 0;
-    for (i=0; i < digit_signal_lengths.size(); i++)
-        length_counts[digit_signal_lengths[i]] += 1;
-
-    std::vector<int> unq_length_digits;
+void part1(std::vector<EncodedDigits> outputs) {
+    auto unq_length_map = get_unique_length_digit_map();
     std::vector<int> unq_lengths;
-    for (i=0; i < digit_signal_lengths.size(); i++) {
-        auto len = digit_signal_lengths[i];
-        if (length_counts[len] == 1) {
-            unq_length_digits.push_back(i);
-            unq_lengths.push_back(len);
-        }
+    std::vector<int> unq_length_digits;
+    for (auto const& [key, val] : unq_length_map) {
+        unq_lengths.push_back(key);
+        unq_length_digits.push_back(val);
     }
 
     int counter = 0;
-    for (i=0; i < outputs.size(); i++) {
+    for (int i=0; i < outputs.size(); i++) {
         for (int j=0; j < outputs[i].size(); j++) {
             if (std::count(unq_lengths.begin(),
                            unq_lengths.end(),
@@ -42,6 +27,21 @@ void part1(std::vector<std::vector<std::string>> outputs) {
     }
     print_vector1d(unq_length_digits);
     std::cout << counter << std::endl;
+}
+
+void part2(std::vector<EncodedDigits> signal_patterns, std::vector<EncodedDigits> outputs) {
+    std::vector<int> digits;
+    int sum = 0;
+
+    for (int i=0; i < signal_patterns.size(); i++) {
+        digits = {};
+        auto decoder = get_decoder(signal_patterns[i]);
+        for (auto &elem : outputs[i])
+            digits.push_back(decoder[elem]);
+        std::cout << vector_to_int(digits) << std::endl;
+        sum += vector_to_int(digits);
+    }
+    std::cout << "Part 2 answer: " << sum << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     // print_vector2d(outputs);
 
     part1(outputs);
-    // std::cout << "--------" << std::endl;
-    // part2(crabs);
+    std::cout << "--------" << std::endl;
+    part2(signal_patterns, outputs);
 
 }
