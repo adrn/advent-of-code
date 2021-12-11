@@ -10,6 +10,7 @@
 
 #define underline "\033[4m"
 #define offline "\033[0m"
+#define MAXITER 128
 
 std::vector<std::vector<int>> parse_file(std::string filename) {
     std::vector<std::vector<int>> data = {};
@@ -49,7 +50,7 @@ std::vector<std::tuple<int, int>> get_neighborhood(int i1, int i2, int size1, in
     return neighbors;
 }
 
-std::set<std::tuple<int, int>> find_minima(std::vector<std::vector<int>> data) {
+std::set<std::tuple<int, int>> find_minima(std::vector<std::vector<int>> &data) {
     auto size1 = data.size();
     auto size2 = data[0].size();
 
@@ -68,7 +69,7 @@ std::set<std::tuple<int, int>> find_minima(std::vector<std::vector<int>> data) {
     int minima_size = minima.size();
     auto past_minima = minima;
 
-    for (int iter=0; iter < 100; iter++) {
+    for (int iter=0; iter < MAXITER; iter++) {
         std::cout << "iter: " << iter << std::endl;
         minima = {};
         for (auto [i, j] : past_minima) {
@@ -82,14 +83,11 @@ std::set<std::tuple<int, int>> find_minima(std::vector<std::vector<int>> data) {
             if (std::count(vals.begin(), vals.end(), vals[min_idx]) > 1)
                 continue;
 
-            // std::cout << "shite" << min_idx << std::endl;
             minima.insert(nbidx[min_idx]);
-            // break;
         }
 
         intersect = {};
         intersect = custom_intersect(past_minima, minima);
-        // std::cout << "intersect: " << intersect.size() << " past: " << past_minima.size() << std::endl;
         if (intersect.size() == past_minima.size())
             break;
 
@@ -99,42 +97,69 @@ std::set<std::tuple<int, int>> find_minima(std::vector<std::vector<int>> data) {
     return minima;
 }
 
-void part1(std::vector<std::vector<int>> data) {
+std::set<std::tuple<int, int>> get_basin(
+    std::vector<std::vector<int>> &data,
+    std::tuple<int, int> minimum
+) {
+    auto size1 = data.size();
+    auto size2 = data[0].size();
+
+    int prev_size;
+
+    std::set<std::tuple<int, int>> basin_idx = {minimum};
+    for (int iter=0; iter < MAXITER; iter++) {
+        // std::cout << "iter: " << iter << std::endl;
+
+        prev_size = basin_idx.size();
+        auto prev_basin_idx = basin_idx;
+        for (auto [i, j] : prev_basin_idx) {
+            auto nbidx = get_neighborhood(i, j, size1, size2);
+
+            for (auto [k, l] : nbidx) {
+                if (data[k][l] < 9)
+                    basin_idx.insert({k, l});
+            }
+        }
+
+        if (basin_idx.size() == prev_size)
+            break;
+
+        prev_size = basin_idx.size();
+    }
+
+    return basin_idx;
+}
+
+std::set<std::tuple<int, int>> part1(std::vector<std::vector<int>> data) {
     auto minima = find_minima(data);
     std::cout << "There are " << minima.size() << " low points." << std::endl;
-    // for (auto [i1, i2] : minima)
-    //     std::cout << i1 << ", " << i2 << std::endl;
 
     int risk_level_sum = 0;
     for (auto [i, j] : minima)
         risk_level_sum += data[i][j] + 1;
 
-    std::cout << "Sum of risk levels: " << risk_level_sum << std::endl;
+    std::cout << "Part 1: Sum of risk levels: " << risk_level_sum << std::endl;
 
-    for (int i=0; i < data.size(); i++) {
-        for (int j=0; j < data[i].size(); j++) {
-            if (minima.count({i, j}) > 0)
-                std::cout << underline;
-            std::cout << data[i][j] << offline;
-        }
-        std::cout << std::endl;
-    }
+    return minima;
 }
 
-// void part2(std::vector<EncodedDigits> signal_patterns, std::vector<EncodedDigits> outputs) {
-//     std::vector<int> digits;
-//     int sum = 0;
+void part2(std::vector<std::vector<int>> data, std::set<std::tuple<int, int>> minima) {
+    std::set<std::tuple<int, int>> basin;
 
-//     for (int i=0; i < signal_patterns.size(); i++) {
-//         digits = {};
-//         auto decoder = get_decoder(signal_patterns[i]);
-//         for (auto &elem : outputs[i])
-//             digits.push_back(decoder[elem]);
-//         std::cout << vector_to_int(digits) << std::endl;
-//         sum += vector_to_int(digits);
-//     }
-//     std::cout << "Part 2 answer: " << sum << std::endl;
-// }
+    std::vector<int> basin_sizes = {};
+    for (auto &min : minima) {
+        basin = get_basin(data, min);
+        basin_sizes.push_back(basin.size());
+        // for (auto [i, j] : basin)
+        //     std::cout << i << " " << j << std::endl;
+    }
+
+    std::sort(basin_sizes.begin(), basin_sizes.end(), std::greater<int>());
+    print_vector1d(basin_sizes);
+
+    std::cout << "Part 2: " << basin_sizes[0] * basin_sizes[1] * basin_sizes[2] << std::endl;
+
+}
 
 int main(int argc, char** argv) {
     std::cout << "---------------- Day 09 ----------------" << std::endl;
@@ -145,17 +170,17 @@ int main(int argc, char** argv) {
 
     std::string datafile_path(argv[1]);
     auto data = parse_file(datafile_path);
-    // print_vector2d(data);
 
-    // auto fuck = get_neighbors(9, 8, 10, 10);
-    // std::cout << fuck.size() << std::endl;
+    auto minima = part1(data);
+    // for (int i=0; i < data.size(); i++) {
+    //     for (int j=0; j < data[i].size(); j++) {
+    //         if (minima.count({i, j}) > 0)
+    //             std::cout << underline;
+    //         std::cout << data[i][j] << offline;
+    //     }
+    //     std::cout << std::endl;
+    // }
 
-    // std::cout << std::endl;
-    // for (auto [i, j] : fuck)
-    //     std::cout << i << " " << j << std::endl;
-
-    part1(data);
-    // std::cout << "--------" << std::endl;
-    // part2(signal_patterns, outputs);
-
+    std::cout << "--------" << std::endl;
+    part2(data, minima);
 }
