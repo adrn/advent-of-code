@@ -1,9 +1,10 @@
-
 #include <string>
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <set>
+#include <tuple>
 
 /*
     strip_string()
@@ -213,4 +214,18 @@ int vector_to_int(std::vector<int> v) {
         decimal *= 10;
     }
     return total;
+}
+
+std::set<std::tuple<int, int>> custom_intersect(
+    std::set<std::tuple<int, int>> &s1,
+    std::set<std::tuple<int, int>> &s2
+) {
+    std::set<std::tuple<int, int>> intersect;
+
+    for (auto &elem : s1) {
+        if (s2.find(elem) != s2.end())
+            intersect.insert(elem);
+    }
+
+    return intersect;
 }
