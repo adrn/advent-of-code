@@ -5,6 +5,8 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
+#include <unistd.h>
+#include <ncurses.h>
 #include "helpers.hpp"
 
 using namespace std;
@@ -54,7 +56,7 @@ vector<tuple<int, int>> get_ready_octopi(vector<vector<int>> &data) {
     return ready;
 }
 
-int flash_step(vector<vector<int>> &data) {
+vector<tuple<int, int>> flash_step(vector<vector<int>> &data) {
     auto ready = get_ready_octopi(data);
     vector<tuple<int, int>> flashed;
     while (ready.size() > 0) {
@@ -70,12 +72,14 @@ int flash_step(vector<vector<int>> &data) {
     for (auto [i1, i2] : flashed)
         data[i1][i2] = 0;
 
-    return flashed.size();
+    return flashed;
 }
 
-void part1(vector<vector<int>> &data, int nsteps) {
-    int nflashes = 0;
+void run(vector<vector<int>> data, int nsteps, bool animate=false) {
+    int total_nflashes = 0;
     int step;
+
+    set<tuple<int, int>> unique_flashers;
 
     cout << "Initial state: ";
     print_vector2d(data);
@@ -86,14 +90,45 @@ void part1(vector<vector<int>> &data, int nsteps) {
             for (int j=0; j < data[0].size(); j++)
                 data[i][j] += 1;
 
-        nflashes += flash_step(data);
+        auto flashed = flash_step(data);
+        total_nflashes += flashed.size();
+
+        unique_flashers = {};
+        for (auto [i, j] : flashed)
+            unique_flashers.insert({i, j});
 
         // cout << "After step " << step+1 << ": ";
         // print_vector2d(data);
 
         flash_sequence.push_back(data);
+
+        if (unique_flashers.size() == (data.size() * data[0].size())) {
+            cout << "All octopuses flashed on Step " << step+1 << endl;
+            print_vector2d(data);
+            break;
+        }
+
     }
-    cout << "After " << step << " steps, there have been " << nflashes << " flashes." << endl;
+    cout << "After " << step << " steps, there have been " << total_nflashes << " flashes." << endl;
+
+    if (animate) {
+        // Printing fun:
+        setlocale(LC_ALL, "");
+        initscr();
+        for (auto seq : flash_sequence) {
+            for (int i=0; i < seq.size(); i++)
+                for (int j=0; j < seq[0].size(); j++)
+                    if (seq[i][j] == 0)
+                        mvprintw(i, 2*j, "🌟");
+                    else
+                        mvprintw(i, 2*j, "🐙");
+            refresh();
+            usleep(100000);
+        }
+        getch();
+        endwin();
+    }
+
 }
 
 int main(int argc, char** argv) {
@@ -109,11 +144,13 @@ int main(int argc, char** argv) {
 
     // Part 1
     cout << "Part 1: " << endl;
-    part1(data, 100);
+    run(data, 100);
+    // part1(data, 1000, true);
 
     cout << "--------" << endl;
 
     // Part 2
     cout << "Part 2: " << endl;
+    run(data, 1000);
 
 }
