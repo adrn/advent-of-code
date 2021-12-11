@@ -45,7 +45,7 @@ void part2(std::vector<EncodedDigits> signal_patterns, std::vector<EncodedDigits
 }
 
 int main(int argc, char** argv) {
-    std::cout << "---------------- Day 07 ----------------" << std::endl;
+    std::cout << "---------------- Day 08 ----------------" << std::endl;
 
     if (argc != 2)
         throw std::runtime_error(

@@ -23,8 +23,6 @@ typedef std::vector<std::string> EncodedDigits;
 
 std::tuple<std::vector<EncodedDigits>, std::vector<EncodedDigits>>
 parse_file(std::string filename) {
-    std::vector<int> data = {};
-
     std::cout << "Loading data file at " << filename << std::endl;
 
     std::ifstream datafile (filename);
